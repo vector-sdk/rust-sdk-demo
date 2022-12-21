@@ -1,0 +1,21 @@
+cargo-features = ["per-package-target"]
+
+[package]
+name                    = "rust-happ"
+version.workspace       = true
+edition.workspace       = true
+authors.workspace       = true
+repository.workspace    = true
+readme.workspace        = true
+license.workspace       = true
+description             = ""
+default-target          = "riscv64gc-unknown-linux-gnu"
+
+[dependencies]
+
+[dependencies.happ]
+path = "../rust-sdk/libhapp"
+
+[features]
+default      = []
+debug_memory = ["happ/debug_memory"]

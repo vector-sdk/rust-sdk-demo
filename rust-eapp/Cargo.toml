@@ -1,0 +1,21 @@
+cargo-features = ["per-package-target"]
+
+[package]
+name                    = "rust-eapp"
+version.workspace       = true
+edition.workspace       = true
+authors.workspace       = true
+repository.workspace    = true
+readme.workspace        = true
+license.workspace       = true
+description             = ""
+forced-target           = "riscv64gc-unknown-none-elf"
+
+[dependencies]
+
+[dependencies.eapp]
+path = "../rust-sdk/libeapp"
+
+[features]
+default      = []
+debug_memory = ["eapp/debug_memory"]

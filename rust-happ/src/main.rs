@@ -12,7 +12,7 @@ use std::thread;
 
 use happ::{Enclave, Error, Status};
 use happ::ocall::{Listener, OCall};
-use happ::builder::Builder;
+use happ::builder::{Builder, Loadable};
 use happ::device::{KEYSTONE_DEVICE_PATH};
 
 /// An application specific message
@@ -50,6 +50,8 @@ fn main() {
     let app = env::args().nth(1).unwrap();
     // Path to enclave runtime binary
     let ert = env::args().nth(2).unwrap();
+    // Path to loader.bin
+    let ldr = env::args().nth(3).unwrap();
 
     println!("Building enclave");
     let mut builder = Builder::new();
@@ -66,15 +68,21 @@ fn main() {
         return;
     }
 
-    /* Add enclave runtime binary */
-    if builder.add(&ert, true).is_err() {
-        println!("Failed to add binary: {}", ert);
+    /* Add enclave application binary */
+    if builder.add(&app, Loadable::Binary).is_err() {
+        println!("Failed to add binary: {}", app);
         return;
     }
 
-    /* Add enclave application binary */
-    if builder.add(&app, false).is_err() {
-        println!("Failed to add binary: {}", app);
+    /* Add enclave runtime binary */
+    if builder.add(&ert, Loadable::Runtime).is_err() {
+        println!("Failed to add runtime: {}", ert);
+        return;
+    }
+
+    /* Add loader */
+    if builder.add(&ldr, Loadable::Loader).is_err() {
+        println!("Failed to add loader: {}", ldr);
         return;
     }
 
@@ -136,7 +144,6 @@ fn main() {
             Err(error)   => println!("Error: {}", error as u32),
         }
 
-        println!("");
         println!("Making ecall");
         /* Perform an user-defined ecall: */
         let input  = Box::from(MSG);

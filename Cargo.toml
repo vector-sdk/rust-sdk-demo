@@ -5,11 +5,13 @@ members = [
   "rust-eapp",
   "rust-happ",
 ]
+resolver = "2"
 
 [workspace.package]
-version      = "0.2.0"
+version      = "0.3.0"
 edition      = "2021"
-authors      = ["Jukka Julku <jukka.julku@vtt.fi>"]
+authors      = ["Jukka Julku <jukka.julku@vtt.fi>",
+                "Markku Kylänpää <markku.kylanpaa@vtt.fi>"]
 repository   = "https://github.com/vector-sdk/rust-sdk-demo"
 readme       = "README.md"
 license      = "MIT"

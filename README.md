@@ -1,33 +1,66 @@
 # Rust SDK Demo application
 
-This repository contains simple example applications for using the [Rust SDK](https://github.com/vector-sdk/rust-sdk) with [Keystone](https://keystone-enclave.org/).
+This repository contains simple example applications for using the
+[Rust SDK](https://github.com/vector-sdk/rust-sdk) with
+[Keystone](https://keystone-enclave.org/).
 
 # Build and Install
 
-Clone the SDK into the root directory and build the workspace:
+Clone the SDK as a subdirectory of the root directory:
 
-      git clone https://github.com/vector-sdk/rust-sdk
-      cargo build --release
+    git clone https://github.com/vector-sdk/rust-sdk
 
-Copy both the applications, as well as Keystone
-[Eyrie Runtime](https://github.com/keystone-enclave/keystone-runtime) into the
-overlay directory of Keystone image build (represented by $KEYSTONE_BUILD_DIR)
+Build the workspace:
 
-      cp ./target/riscv64gc-unknown-none-elf/release/rust-eapp  \
+    cargo build --release
+
+or using make
+
+    make
+
+Copy both host and enclave applications into the overlay directory of
+Keystone image build (represented by $KEYSTONE\_BUILD\_DIR):
+
+    cp ./target/riscv64gc-unknown-none-elf/release/rust-eapp  \
          $KEYSTONE_BUILD_DIR/overlay/root/
-      cp ./target/riscv64gc-unknown-linux-gnu/release/rust-happ \
+    cp ./target/riscv64gc-unknown-linux-gnu/release/rust-happ \
          $KEYSTONE_BUILD_DIR/overlay/root/
 
-Build Keystone image:
+There is also Makefile target for installation:
 
-      cd $KEYSTONE_BUILD_DIR
-      make image
+    make install
+
+The host application also requires Keystone Eyrie Runtime binary
+eyrie-rt and loader binary. These are built with Keystone examples.
+Copy those files from $KEYSTONE\_BUILD\_DIR keystone-examples
+subdirectory. The files should also be copied to
+$KEYSTONE\_BUILD\_DIR/overlay/root/ directory.
+
+Rebuild Keystone image:
+
+    cd $KEYSTONE_BUILD_DIR/..
+    make
 
 Start the image in qemu:
 
-      ./scripts/run-qemu.sh
+    make run
 
 Load the Keystone driver and run the program:
 
-      insmod keystone-driver.ko
-      ./rust-happ ./rust-eapp ./eyrie-rt
+    modprobe keystone-driver
+    ./rust-happ ./rust-eapp ./eyrie-rt ./loader
+
+# Known problems
+
+The host example `rust-happ` is using static linking. This will generate
+the following linker warning:
+
+    Using 'getaddrinfo' in statically linked applications requires at
+    runtime the shared libraries from the glibc version used for linking
+
+# Acknowledgment
+
+This work is partly supported by the European Union’s Horizon Europe
+research and innovation programme in the scope of the the
+[CONFIDENTIAL6G](https://confidential6g.eu/) project under Grant
+Agreement 101096435.
